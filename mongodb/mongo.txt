@@ -1,0 +1,464 @@
+
+Create Database
+Let's create a new database named "mydatabase":
+
+use mydatabase
+
+ Create Collection
+Now, let's create a collection named "users" within the "mydatabase" database:
+
+db.createCollection("users")
+
+Insert Documents (Create Operation)
+
+db.users.insertMany([
+    { name: "John", age: 30, city: "New York" },
+    { name: "Alice", age: 25, city: "Los Angeles" },
+    { name: "Bob", age: 35, city: "Chicago" }
+])
+
+
+ Retrieve Documents (Read Operation)
+
+db.users.find()
+
+Update Documents (Update Operation)
+
+db.users.updateOne({ name: "John" }, { $set: { age: 32 } })
+
+Delete Documents (Delete Operation)
+db.users.drop()
+
+ Drop Collection
+db.users.drop()
+
+
+Exit MongoDB Shell
+
+exit
+
+
+
+
+// Switch to the desired database (optional)
+use mydatabase
+
+// Create "students" collection
+db.createCollection("students")
+
+// Insert a single document into "students" collection
+db.students.insertOne({ name: "Alice", age: 20, grade: "A" })
+
+// Insert multiple documents into "students" collection
+db.students.insertMany([
+  { name: "Bob", age: 22, grade: "B" },
+  { name: "Charlie", age: 25, grade: "B+" },
+  { name: "David", age: 18, grade: "A-" }
+])
+
+
+comparison operations:
+
+1)Find students older than 21:
+		db.students.find({ age: { $gt: 21 } })
+
+2)Find students younger than or equal to 20:
+		db.students.find({ age: { $lte: 20 } })
+
+3)Find students with grade "A":
+		db.students.find({ grade: "A" })
+
+4)Find students with age between 20 and 25 (inclusive):
+		db.students.find({ age: { $gte: 20, $lte: 25 } })
+
+
+5)Find students whose age is not equal to 22:
+		db.students.find({ age: { $ne: 22 } })
+
+
+6)Find students with age greater than or equal to 20 and grade not equal to "B":
+		db.students.find({ age: { $gte: 20 }, grade: { $ne: "B" } })
+
+7)Find students with age less than 18 or grade equal to "A":
+		db.students.find({ $or: [ { age: { $lt: 18 } }, { grade: "A" } ] })
+
+
+perform cursor operations in MongoDB
+
+
+// Query all documents in the "students" collection
+var cursor = db.students.find();
+
+// Iterate over the cursor
+cursor.forEach(function(student) {
+    print(student.name);
+});
+
+
+1)
+
+	// Query with limit
+	var cursor = db.students.find().limit(5);
+
+2)
+	// Query with skip
+	var cursor = db.students.find().skip(10);
+3)
+	// Query with sort
+	var cursor = db.students.find().sort({ age: -1 });
+4)
+	// Count the number of documents
+	var count = db.students.find().count();
+
+perform logical operations
+
+1)
+
+// Find students who are older than 20 and have a grade of "A"
+db.students.find({
+    $and: [
+        { age: { $gt: 20 } },
+        { grade: "A" }
+    ]
+})
+
+2)
+
+// Find students who are either older than 25 or have a grade of "A"
+db.students.find({
+    $or: [
+        { age: { $gt: 25 } },
+        { grade: "A" }
+    ]
+})
+
+
+3)
+
+// Find students who are not older than 18
+db.students.find({
+    age: { $not: { $gt: 18 } }
+})
+
+4)
+
+// Find students who are older than 20 and have a grade of "A", or are younger than 18
+db.students.find({
+    $or: [
+        { $and: [
+            { age: { $gt: 20 } },
+            { grade: "A" }
+        ]},
+        { age: { $lt: 18 } }
+    ]
+})
+
+
+ complex expression
+
+db.students.find({
+    $or: [
+        { $and: [
+            { age: { $gt: 20 } },
+            { grade: "A" }
+        ]},
+        { $and: [
+            { age: { $lt: 18 } },
+            { grade: "B" }
+        ]}
+    ]
+})
+
+
+Element operators in MongoDB
+
+1)$exists: Matches documents that contain the specified field.
+// Find students who have the "age" field
+db.students.find({ age: { $exists: true } })
+
+2)
+$type: Matches documents based on the BSON type of a field.
+// Find students whose "age" field is of type "int"
+db.students.find({ age: { $type: "int" } })
+
+3)
+$eq: Matches documents where the value of a field equals the specified value.
+// Find students whose "grade" field equals "A"
+db.students.find({ grade: { $eq: "A" } })
+
+4)
+$ne: Matches documents where the value of a field is not equal to the specified value.
+// Find students whose "grade" field is not equal to "B"
+db.students.find({ grade: { $ne: "B" } })
+
+5)
+$in: Matches documents where the value of a field equals any value in the specified array.
+// Find students whose "grade" field is either "A" or "B"
+db.students.find({ grade: { $in: ["A", "B"] } })
+
+6)
+$nin: Matches documents where the value of a field is not in the specified array.
+// Find students whose "grade" field is neither "A" nor "B"
+db.students.find({ grade: { $nin: ["A", "B"] } })
+
+
+Update operators in MongoDB 
+
+
+1)
+$set: Sets the value of a field in a document.
+// Set the "status" field to "active" for all students
+db.students.updateMany({}, { $set: { status: "active" } })
+
+2)
+$unset: Removes a field from a document.
+// Remove the "grade" field for a specific student
+db.students.updateOne({ name: "Alice" }, { $unset: { grade: "" } })
+
+
+3)
+$inc: Increments the value of a field by a specified amount
+// Increment the "age" field by 1 for all students
+db.students.updateMany({}, { $inc: { age: 1 } })
+
+
+4)$mul: Multiplies the value of a field by a specified amount.
+// Multiply the "score" field by 1.5 for a specific student
+db.students.updateOne({ name: "Alice" }, { $mul: { score: 1.5 } })
+
+5)
+$rename: Renames a field in a document
+// Rename the "status" field to "active_status" for all students
+db.students.updateMany({}, { $rename: { "status": "active_status" } })
+
+
+6)
+$push: Adds an element to an array field.
+// Add a new subject to the "subjects" array for a specific student
+db.students.updateOne({ name: "Alice" }, { $push: { subjects: "Math" } })
+
+
+7)
+$pull: Removes all occurrences of a specified value from an array field.
+// Remove all occurrences of "Math" from the "subjects" array for a specific student
+db.students.updateOne({ name: "Alice" }, { $pull: { subjects: "Math" } })
+
+8)
+
+$addToSet: Adds elements to an array field only if they do not already exist.
+// Add a new subject to the "subjects" array for a specific student if it doesn't already exist
+db.students.updateOne({ name: "Alice" }, { $addToSet: { subjects: "Physics" } })
+
+9)
+// Update the "score" field to the maximum of the existing value and the specified value
+db.students.updateOne(
+    { name: "Alice" }, 
+    { $max: { score: 90 } }
+)
+
+10)
+
+// Update the "score" field to the minimum of the existing value and the specified value
+db.students.updateOne(
+    { name: "Alice" }, 
+    { $min: { score: 85 } }
+)
+
+
+11)
+$pop with 1: Removes the last element of an array field
+// Remove the last element from the "subjects" array for a specific student
+db.students.updateOne(
+    { name: "Alice" }, 
+    { $pop: { subjects: 1 } }
+)
+// Remove the first element from the "subjects" array for a specific student
+db.students.updateOne(
+    { name: "Alice" }, 
+    { $pop: { subjects: -1 } }
+)
+
+$pop with -1: Removes the first element of an array field.
+// Remove the first element from the "subjects" array for a specific student
+db.students.updateOne(
+    { name: "Alice" }, 
+    { $pop: { subjects: -1 } }
+)
+
+
+ MongoDB, to replace an entire document
+
+you can use the replaceOne() method.
+
+// Replace the document for the student named "Alice" with a new document
+db.students.replaceOne(
+    { name: "Alice" },  // Filter to match the document to be replaced
+    { name: "Alice", age: 25, grade: "A+" }  // Replacement document
+)
+
+If you want to replace multiple documents that match a filter, you can use updateMany() with the $set operator to replace specific fields or the entire document
+
+// Replace the "grade" field for all students named "Alice" with "A+"
+db.students.updateMany(
+    { name: "Alice" },  // Filter to match the documents to be replaced
+    { $set: { grade: "A+" } }  // Replacement operation
+)
+
+
+In MongoDB, to delete documents that match a specified condition, you can use the deleteOne() or deleteMany() method
+
+1)deleteOne(): Deletes a single document that matches the specified filter.
+// Delete the document for the student named "Alice"
+db.students.deleteOne({ name: "Alice" })
+
+2)deleteMany(): Deletes all documents that match the specified filter.
+// Delete all documents where the age is less than 18
+db.students.deleteMany({ age: { $lt: 18 } })
+
+
+
+In MongoDB, to delete an entire collection, you can use the drop() method. This method removes the entire collection along with all its documents.
+
+// Drop the "students" collection
+db.students.drop()
+
+
+create indexes in MongoDB:
+
+1)Single Field Index:
+// Create an index on the "name" field of the "students" collection
+db.students.createIndex({ name: 1 })
+
+
+2)
+Compound Index:
+// Create a compound index on the "name" and "age" fields of the "students" collection
+db.students.createIndex({ name: 1, age: -1 })
+
+
+// Get information about indexes on the "students" collection
+var indexes = db.students.getIndexes();
+printjson(indexes);
+
+
+// Drop an index named "indexName" from the "students" collection
+db.students.dropIndex("indexName")
+
+
+MongoDB, the aggregation
+
+Aggregation Operators:
+
+1)
+$match: Filters the documents to pass only those that match the specified condition(s).
+db.collection.aggregate([
+    { $match: { age: { $gte: 18 } } }
+])
+
+2)
+$group: Groups documents by a specified expression and calculates aggregate values for each group.
+db.collection.aggregate([
+    { $group: { _id: "$category", totalAmount: { $sum: "$amount" } } }
+])
+
+3)
+$project: Reshapes documents by including, excluding, or renaming fields.
+db.collection.aggregate([
+    { $project: { _id: 0, name: 1, age: 1 } }
+])
+
+
+4)
+$sort: Sorts the documents based on the specified fields and sort order.
+db.collection.aggregate([
+    { $sort: { age: -1 } }
+])
+
+
+5)
+
+$limit: Limits the number of documents passed to the next stage in the pipeline.
+db.collection.aggregate([
+    { $limit: 10 }
+])
+
+
+6)
+$skip: Skips a specified number of documents and passes the remaining documents to the next stage.
+
+db.collection.aggregate([
+    { $skip: 5 }
+])
+
+
+7)$unwind: Deconstructs an array field and outputs one document for each element
+db.collection.aggregate([
+    { $unwind: "$tags" }
+])
+
+
+8)
+$lookup: Performs a left outer join to another collection in the same database.
+db.orders.aggregate([
+    {
+        $lookup:
+            {
+                from: "products",
+                localField: "productId",
+                foreignField: "_id",
+                as: "product"
+            }
+   }
+])
+
+
+9)
+
+// Count the total number of documents in the collection
+db.collection.aggregate([
+    { $count: "totalDocuments" }
+])
+
+10)
+
+// Calculate the average age across all documents in the collection
+db.collection.aggregate([
+    { $group: { _id: null, avgAge: { $avg: "$age" } } }
+])
+
+
+11)
+
+// Calculate the total sales amount for each category
+db.collection.aggregate([
+    { $group: { _id: "$category", totalSales: { $sum: "$amount" } } }
+])
+
+
+12)
+
+// Find the minimum price for each category
+db.collection.aggregate([
+    { $group: { _id: "$category", minPrice: { $min: "$price" } } }
+])
+
+
+13)
+
+// Find the maximum price for each category
+db.collection.aggregate([
+    { $group: { _id: "$category", maxPrice: { $max: "$price" } } }
+])
+
+
+
+
+
+
+
+
+
+		
+
+
+
